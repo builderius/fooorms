@@ -1,0 +1,52 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "3bf06d2b0a84f44a56b35bbf3060f2e9",
+    "packages": [
+        {
+            "name": "anthonybudd/wp_mail",
+            "version": "v2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/anthonybudd/WP_Mail.git",
+                "reference": "73fbca77190dfe0af7d40d82eaa7a9f46890d8f0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/anthonybudd/WP_Mail/zipball/73fbca77190dfe0af7d40d82eaa7a9f46890d8f0",
+                "reference": "73fbca77190dfe0af7d40d82eaa7a9f46890d8f0",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/WP_Mail.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Anthony Budd",
+                    "email": "anthonybudd94@gmail.com"
+                }
+            ],
+            "support": {
+                "issues": "https://github.com/anthonybudd/WP_Mail/issues",
+                "source": "https://github.com/anthonybudd/WP_Mail/tree/v2.0"
+            },
+            "time": "2018-03-10T17:56:17+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.0.0"
+}

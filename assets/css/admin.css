@@ -1,0 +1,146 @@
+/**
+ * Admin styles
+ */
+ 
+/**
+ * Fields table
+ */
+.widefat .field-group-heading {
+	background-color: #f9f9f9;
+}
+
+.widefat .field-group-heading td {
+	padding-bottom: 4px;
+	padding-top: 15px;
+	border-top: 1px solid #e1e1e1;
+	border-bottom: 1px solid #e1e1e1;
+}
+
+.widefat .field-group-heading:first-child td {
+	border-top: 0;
+}
+
+.fooorms-field-group-table {
+	margin-bottom: 1em;
+}
+
+
+/**
+ * Hide title input on entries
+ */
+.post-type-fooorms_entry #titlediv {
+	display: none;
+}
+
+#acf_after_title-sortables #acf-group_entry_data {
+	margin-top: 0;
+}
+
+/**
+ * Form settings
+ */
+.fooorms_endpoint_code {
+	/* Improve selection behaviour of shortcode */
+	-webkit-user-select: all;
+	user-select: all;
+	padding: 1px;
+}
+
+
+/**
+ * Make room for the field selector on the email fields
+ */
+.acf-field .acf-input {
+	position: relative;
+}
+
+.acf-field .button.floating {
+	display: inline-block;
+	position: absolute;
+	right: 3px;
+	top: 50%;
+	font-size: 12px;
+	line-height: 20px;
+	height: 22px;
+	margin-top: -11px;
+	min-height: initial;
+}
+
+.acf-field .button.floating:active {
+	z-index: 1000;
+}
+
+/* Allow spinners inside buttons */
+.acf-field .button .spinner {
+	background-position: center top;
+	background-size: 18px;
+	float: none;
+	margin: 0;
+}
+
+
+/**
+ * ACF Tabs (spacing, dashicons)
+ */
+.acf-tab-button .dashicons {
+	font-size: 16px;
+	height: auto;
+	margin-top: -4px;
+	margin-right: 5px;
+	vertical-align: middle;
+}
+
+.acf-tab-button[data-key="field_form_editing_tab"] {
+	margin-top: 10px;
+}
+
+
+/**
+ * Images in field labels
+ */
+.acf-field .acf-label img {
+	height: 16px;
+	vertical-align: middle;
+	margin-top: -3px;
+	margin-right: 6px;
+}
+
+.acf-field .acf-label p.description span {
+	font-weight: normal;
+	color: green;
+	background-color: #eefbee;
+	-webkit-user-select: all;
+	user-select: all;
+}
+
+
+/**
+ * Divider field 
+ */
+.acf-fields > .acf-field.acf-field-divider,
+.acf-block-body .acf-fields > .acf-field.acf-field-divider {
+	background: #f9f9f9;
+	padding: 3px 0;
+}
+
+
+/**
+ * Record/form entry
+ */
+.acf-field.acf-field-entry-submission-info .acf-label > label,
+.acf-field.acf-field-entry-form .acf-label > label,
+.acf-field.acf-field-entry-submission-data .acf-label > label {
+	background-color: antiquewhite;
+	padding: 4px;
+	border-top: 1px solid #f8dab1;
+}
+
+.acf-field-entry-submission-data .record {
+	padding-bottom: 7px;
+}
+
+.acf-field-entry-submission-data .record .label {
+	background-color: aliceblue;
+	padding: 4px;
+	border-top: 1px solid #bfdcf4;
+}

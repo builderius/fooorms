@@ -1,0 +1,430 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Fooorms!\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-05-30 17:49+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: support@builderius.io\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.3.1\n"
+"X-Domain: fooorms\n"
+"X-Poedit-KeywordsList: __;_e;esc_html__;esc_html_e;esc_attr__;esc_attr_e\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: vendor\n"
+
+#: class-fooorms.php:30 class-fooorms.php:40
+msgid "Cheatin&#8217; huh?"
+msgstr ""
+
+#: class-fooorms.php:132
+msgid "Fooorms"
+msgstr ""
+
+#: class-fooorms.php:133 class-fooorms.php:157 class-fooorms.php:158
+#: includes/acf/class-admin-entries.php:148
+#: includes/acf/class-admin-entries.php:327
+msgid "Form"
+msgstr ""
+
+#: class-fooorms.php:134
+msgid "Form Archives"
+msgstr ""
+
+#: class-fooorms.php:135
+msgid "Parent Form:"
+msgstr ""
+
+#: class-fooorms.php:136
+msgid "Forms"
+msgstr ""
+
+#: class-fooorms.php:137
+msgid "Add New Form"
+msgstr ""
+
+#: class-fooorms.php:138 class-fooorms.php:185
+msgid "Add New"
+msgstr ""
+
+#: class-fooorms.php:139
+msgid "New Form"
+msgstr ""
+
+#: class-fooorms.php:140
+msgid "Edit Form"
+msgstr ""
+
+#: class-fooorms.php:141
+msgid "Update Form"
+msgstr ""
+
+#: class-fooorms.php:142
+msgid "View Form"
+msgstr ""
+
+#: class-fooorms.php:143
+msgid "Search Form"
+msgstr ""
+
+#: class-fooorms.php:144 class-fooorms.php:191
+msgid "Not found"
+msgstr ""
+
+#: class-fooorms.php:145 class-fooorms.php:192
+msgid "Not found in Trash"
+msgstr ""
+
+#: class-fooorms.php:146 class-fooorms.php:193
+msgid "Featured Image"
+msgstr ""
+
+#: class-fooorms.php:147 class-fooorms.php:194
+msgid "Set featured image"
+msgstr ""
+
+#: class-fooorms.php:148 class-fooorms.php:195
+msgid "Remove featured image"
+msgstr ""
+
+#: class-fooorms.php:149 class-fooorms.php:196
+msgid "Use as featured image"
+msgstr ""
+
+#: class-fooorms.php:150
+msgid "Insert into form"
+msgstr ""
+
+#: class-fooorms.php:151
+msgid "Uploaded to this form"
+msgstr ""
+
+#: class-fooorms.php:152
+msgid "Forms list"
+msgstr ""
+
+#: class-fooorms.php:153
+msgid "Forms list navigation"
+msgstr ""
+
+#: class-fooorms.php:154
+msgid "Filter forms list"
+msgstr ""
+
+#: class-fooorms.php:179 class-fooorms.php:183
+#: includes/acf/class-admin-entries.php:258
+#: includes/acf/class-admin-forms.php:150
+msgid "Entries"
+msgstr ""
+
+#: class-fooorms.php:180 class-fooorms.php:204 class-fooorms.php:205
+msgid "Entry"
+msgstr ""
+
+#: class-fooorms.php:181
+msgid "Entry Archives"
+msgstr ""
+
+#: class-fooorms.php:182
+msgid "Parent Entry:"
+msgstr ""
+
+#: class-fooorms.php:184
+msgid "Add New Entry"
+msgstr ""
+
+#: class-fooorms.php:186
+msgid "New Entry"
+msgstr ""
+
+#: class-fooorms.php:187
+msgid "Edit Entry"
+msgstr ""
+
+#: class-fooorms.php:188
+msgid "Update Entry"
+msgstr ""
+
+#: class-fooorms.php:189
+msgid "View Entry"
+msgstr ""
+
+#: class-fooorms.php:190
+msgid "Search Entry"
+msgstr ""
+
+#: class-fooorms.php:197
+msgid "Insert into entry"
+msgstr ""
+
+#: class-fooorms.php:198
+msgid "Uploaded to this entry"
+msgstr ""
+
+#: class-fooorms.php:199
+msgid "Entries list"
+msgstr ""
+
+#: class-fooorms.php:200
+msgid "Entries list navigation"
+msgstr ""
+
+#: class-fooorms.php:201
+msgid "Filter entries list"
+msgstr ""
+
+#: class-fooorms.php:235
+msgid "View entry"
+msgstr ""
+
+#: class-fooorms.php:236
+msgid "View"
+msgstr ""
+
+#: class-fooorms.php:262
+msgid "Text input (text, email, hidden etc)"
+msgstr ""
+
+#: class-fooorms.php:266
+msgid "Input type \"number\" for integers"
+msgstr ""
+
+#: class-fooorms.php:270
+msgid "Input type \"number\" for decimals"
+msgstr ""
+
+#: class-fooorms.php:274
+msgid "Textarea"
+msgstr ""
+
+#: class-fooorms.php:278
+msgid "Select"
+msgstr ""
+
+#: class-fooorms.php:282
+msgid "Radio input"
+msgstr ""
+
+#: class-fooorms.php:286
+msgid "Checkboxes"
+msgstr ""
+
+#: includes/acf/class-admin-emails.php:51
+#, php-format
+msgid "You can use these dynamic variables from the form: %s. Also, these persistent variables: %s"
+msgstr ""
+
+#: includes/acf/class-admin-emails.php:68
+msgid "Notifications"
+msgstr ""
+
+#: includes/acf/class-admin-emails.php:85
+msgid "Emails"
+msgstr ""
+
+#: includes/acf/class-admin-emails.php:88
+msgid "The emails defined here will be sent upon successful submission."
+msgstr ""
+
+#: includes/acf/class-admin-emails.php:100
+msgid "Add new email"
+msgstr ""
+
+#: includes/acf/class-admin-emails.php:104
+#: includes/acf/class-admin-forms.php:98
+msgid "Name"
+msgstr ""
+
+#: includes/acf/class-admin-emails.php:123
+msgid "Active?"
+msgstr ""
+
+#: includes/acf/class-admin-emails.php:139
+msgid "Send to"
+msgstr ""
+
+#: includes/acf/class-admin-emails.php:151
+msgid "Select from field"
+msgstr ""
+
+#: includes/acf/class-admin-emails.php:152
+#: includes/acf/class-admin-emails.php:193
+msgid "Custom recipient"
+msgstr ""
+
+#: includes/acf/class-admin-emails.php:163
+msgid "Recipient field"
+msgstr ""
+
+#: includes/acf/class-admin-emails.php:220
+msgid "From"
+msgstr ""
+
+#: includes/acf/class-admin-emails.php:239
+msgid "Subject"
+msgstr ""
+
+#: includes/acf/class-admin-emails.php:258
+msgid "Content"
+msgstr ""
+
+#: includes/acf/class-admin-entries.php:62
+msgid "Entry ID"
+msgstr ""
+
+#: includes/acf/class-admin-entries.php:64
+msgid "Date"
+msgstr ""
+
+#: includes/acf/class-admin-entries.php:66
+msgid "Time"
+msgstr ""
+
+#: includes/acf/class-admin-entries.php:132
+msgid "No attachments added"
+msgstr ""
+
+#: includes/acf/class-admin-entries.php:192
+msgid "All forms"
+msgstr ""
+
+#: includes/acf/class-admin-entries.php:241
+msgid "View entries for this form"
+msgstr ""
+
+#: includes/acf/class-admin-entries.php:276
+msgid "Create entries?"
+msgstr ""
+
+#: includes/acf/class-admin-entries.php:279
+msgid "When entries are enabled they will be automatically generated with form submissions, with all the submitted field data."
+msgstr ""
+
+#: includes/acf/class-admin-entries.php:309
+msgid "Entry data"
+msgstr ""
+
+#: includes/acf/class-admin-entries.php:313
+msgid "Submission info"
+msgstr ""
+
+#: includes/acf/class-admin-entries.php:341
+msgid "Submission data"
+msgstr ""
+
+#: includes/acf/class-admin-entries.php:355
+msgid "Submission attachments"
+msgstr ""
+
+#: includes/acf/class-admin-forms.php:60
+msgid "Form key:"
+msgstr ""
+
+#: includes/acf/class-admin-forms.php:71 includes/acf/class-admin-forms.php:149
+msgid "Fields"
+msgstr ""
+
+#: includes/acf/class-admin-forms.php:92
+msgid "Fields can be added by setting the location of your fields group to this form. The following fields are added:"
+msgstr ""
+
+#: includes/acf/class-admin-forms.php:97
+msgid "Label"
+msgstr ""
+
+#: includes/acf/class-admin-forms.php:99 includes/acf/class-admin-forms.php:169
+msgid "Type"
+msgstr ""
+
+#: includes/acf/class-admin-forms.php:100
+msgid "Is required?"
+msgstr ""
+
+#: includes/acf/class-admin-forms.php:121
+msgid "Yes"
+msgstr ""
+
+#: includes/acf/class-admin-forms.php:121
+msgid "No"
+msgstr ""
+
+#: includes/acf/class-admin-forms.php:128
+msgid "No field groups connected to this form"
+msgstr ""
+
+#: includes/acf/class-admin-forms.php:135
+msgid "Create field group"
+msgstr ""
+
+#: includes/acf/class-admin-forms.php:148
+msgid "Submit Endpoint"
+msgstr ""
+
+#: includes/acf/class-admin-forms.php:170
+msgid "URL"
+msgstr ""
+
+#: includes/acf/class-admin-forms.php:210
+msgid "Form settings"
+msgstr ""
+
+#: includes/acf/class-admin-forms.php:214
+msgid "Display"
+msgstr ""
+
+#: includes/acf/class-admin-forms.php:230
+msgid "Description"
+msgstr ""
+
+#: includes/acf/class-admin-forms.php:248
+msgid "Success message"
+msgstr ""
+
+#: includes/acf/class-admin-forms.php:251
+msgid "The message displayed after a successful submission."
+msgstr ""
+
+#: includes/acf/class-admin-forms.php:266
+msgid "Statistics"
+msgstr ""
+
+#: includes/acf/class-admin-forms.php:282
+msgid "Number of submissions"
+msgstr ""
+
+#: includes/acf/fields/input/class-acf-field-input.php:35
+#: includes/acf/fields/input/class-acf-field-input.php:66
+msgid "Form field"
+msgstr ""
+
+#: includes/acf/fields/input/class-acf-field-input.php:37
+msgid "A form field"
+msgstr ""
+
+#: includes/acf/fields/input/class-acf-field-input.php:67
+msgid "Choose a form field type"
+msgstr ""
+
+#: includes/acf/fields/input/class-acf-field-input.php:77
+msgid "Additional validation rules"
+msgstr ""
+
+#: includes/acf/fields/input/class-acf-field-input.php:78
+msgid "Define validation rules for the field"
+msgstr ""
+
+#: includes/acf/fields/input/class-acf-field-input.php:86
+msgid "Add new rule"
+msgstr ""
+
+#: includes/api.php:80
+msgid "We have received your message. Thank you!"
+msgstr ""
+
+#: includes/api.php:85
+msgid "Something went wrong!"
+msgstr ""

@@ -1,0 +1,42 @@
+{
+    "packages": [
+        {
+            "name": "anthonybudd/wp_mail",
+            "version": "v2.0",
+            "version_normalized": "2.0.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/anthonybudd/WP_Mail.git",
+                "reference": "73fbca77190dfe0af7d40d82eaa7a9f46890d8f0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/anthonybudd/WP_Mail/zipball/73fbca77190dfe0af7d40d82eaa7a9f46890d8f0",
+                "reference": "73fbca77190dfe0af7d40d82eaa7a9f46890d8f0",
+                "shasum": ""
+            },
+            "time": "2018-03-10T17:56:17+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "files": [
+                    "src/WP_Mail.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Anthony Budd",
+                    "email": "anthonybudd94@gmail.com"
+                }
+            ],
+            "support": {
+                "issues": "https://github.com/anthonybudd/WP_Mail/issues",
+                "source": "https://github.com/anthonybudd/WP_Mail/tree/v2.0"
+            },
+            "install-path": "../anthonybudd/wp_mail"
+        }
+    ],
+    "dev": true,
+    "dev-package-names": []
+}
