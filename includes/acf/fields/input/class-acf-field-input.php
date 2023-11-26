@@ -63,6 +63,20 @@ class class_fooorms_acf_field_field extends \acf_field {
         $final_labels = array_combine($keys, $labels);
 
         acf_render_field_setting( $field, array(
+            'label'        => __( 'Required error message', 'fooorms' ),
+            'instructions' => __( 'Set custom message for validation rule "required"', 'fooorms' ),
+            'name'         => 'field_error_msg',
+            'type'         => 'textarea',
+            'value'        => !empty( $field['field_error_msg'] ) ? $field['field_error_msg'] : '',
+            'choices'      => $final_labels,
+            'conditions'   => [
+                'field'    => 'required',
+                'operator' => '==',
+                'value'    => '1'
+            ]
+        ) );
+
+        acf_render_field_setting( $field, array(
             'label'        => __( 'Form field', 'fooorms' ),
             'instructions' => __( 'Choose a form field type', 'fooorms' ),
             'name'         => 'field_type',

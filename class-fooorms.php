@@ -13,7 +13,7 @@ if ( !defined( 'ABSPATH' ) ) {
  */
 final class Fooorms {
 
-    public $version = '1.0.0';
+    public $version = '1.1.0';
 
     protected static $_instance = null;
 
@@ -93,6 +93,9 @@ final class Fooorms {
 
         add_filter( 'post_row_actions', [$this, 'ext_row_actions'], 10, 2 );
         add_filter( 'bulk_actions-edit-fooorms_entry', [$this, 'ext_bulk_actions'], 10, 1 );
+
+        // link to Forms page from plugin item
+        add_filter( 'plugin_action_links', array($this, 'plugin_add_settings_link'), 10, 5 );
     }
 
     /**
@@ -297,6 +300,21 @@ final class Fooorms {
             false,
             plugin_basename( dirname( __FILE__ ) ) . "/languages"
         );
+    }
+
+    /**
+     * @param $links
+     * @return mixed
+     */
+    public function plugin_add_settings_link( $actions, $plugin_file ) {
+        if ( 'fooorms/index.php' === $plugin_file ) {
+            array_unshift(
+                $actions,
+                '<a href="edit.php?post_type=fooorms_form">' . __( 'Forms', 'fooorms' ) . '</a>',
+                '<a href="edit.php?post_type=fooorms_entry">' . __( 'Entries', 'fooorms' ) . '</a>'
+            );
+        }
+        return $actions;
     }
 
     /**

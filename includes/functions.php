@@ -344,7 +344,9 @@ function fooorms_get_smartform_validation_schema($form_key, $translate = true) {
         $validators = [];
 
         if (!empty($form_cfg['required'])) {
-            $msg = __("{$field_label} is required!", 'fooorms');
+            $msg = !empty($form_cfg['field_error_msg'])
+                ? __($form_cfg['field_error_msg'], 'fooorms')
+                : __("{$field_label} is required!", 'fooorms');
 
             if ($translate && class_exists('Builderius\Bundle\ExpressionLanguageBundle\ExpressionLanguage')) {
                 $msg = "[[translate('$msg')]]";
