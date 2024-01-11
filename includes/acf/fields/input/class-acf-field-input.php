@@ -63,6 +63,20 @@ class class_fooorms_acf_field_field extends \acf_field {
         $final_labels = array_combine($keys, $labels);
 
         acf_render_field_setting( $field, array(
+            'label'        => __( 'Required error message', 'fooorms' ),
+            'instructions' => __( 'Set custom message for validation rule "required"', 'fooorms' ),
+            'name'         => 'field_error_msg',
+            'type'         => 'textarea',
+            'value'        => !empty( $field['field_error_msg'] ) ? $field['field_error_msg'] : '',
+            'choices'      => $final_labels,
+            'conditions'   => [
+                'field'    => 'required',
+                'operator' => '==',
+                'value'    => '1'
+            ]
+        ) );
+
+        acf_render_field_setting( $field, array(
             'label'        => __( 'Form field', 'fooorms' ),
             'instructions' => __( 'Choose a form field type', 'fooorms' ),
             'name'         => 'field_type',
@@ -89,11 +103,11 @@ class class_fooorms_acf_field_field extends \acf_field {
                 'sub_fields'    => array(
                     array(
                         'key'               => 'field_646234e211bee',
-                        'label'             => 'Rule (expression)',
+                        'label'             => 'Rule',
                         'name'              => 'rule',
                         'aria-label'        => '',
                         'type'              => 'textarea',
-                        'instructions'      => '',
+                        'instructions'      => __('Must be an expression or JSON', 'fooorms'),
                         'required'          => 0,
                         'conditional_logic' => 0,
                         'wrapper'           => array(
@@ -113,7 +127,7 @@ class class_fooorms_acf_field_field extends \acf_field {
                         'name'              => 'msg',
                         'aria-label'        => '',
                         'type'              => 'textarea',
-                        'instructions'      => '',
+                        'instructions'      => __('Skipped for validate.js config', 'fooorms'),
                         'required'          => 0,
                         'conditional_logic' => 0,
                         'wrapper'           => array(

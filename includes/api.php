@@ -5,7 +5,26 @@ function fooorms_register_route() {
         'methods'             => 'POST',
         'callback'            => 'fooorms_form_submission',
         'permission_callback' => '__return_true',
-        'args'                => array()
+        'args'                => array(
+            'key' => array(
+                'validate_callback' => function ($param, $request, $key) {
+                    return !empty( $param ) && FooormsInit()->fields_provider->is_valid_form_key( $param );
+                }
+            )
+        ),
+    ) );
+
+    register_rest_route( 'fooorms/v1', '/config/(?P<key>[a-zA-Z0-9-_]+)', array(
+        'methods'             => 'GET',
+        'callback'            => 'fooorms_form_config',
+        'permission_callback' => '__return_true',
+        'args'                => array(
+            'key' => array(
+                'validate_callback' => function ($param, $request, $key) {
+                    return !empty( $param ) && FooormsInit()->fields_provider->is_valid_form_key( $param );
+                }
+            )
+        ),
     ) );
 }
 
@@ -20,12 +39,8 @@ function fooorms_form_submission( $request ) {
     }
 
     $form_key = sanitize_text_field( $parameters['key'] );
-
-    if ( empty( $form_key ) || !fooorms_acf_is_valid_form_key( $form_key ) ) {
-        wp_send_json_error();
-    }
-
-    $registered_variables = _fooorms_acf_form_field_names( $form_key, 'options' );
+    fooorms_record_submission_attempt($form_key);
+    $registered_variables = FooormsInit()->fields_provider->form_field_names( $form_key, 'options' );
 
     if ( empty( $registered_variables ) ) {
         wp_send_json_error( ["errorMsg" => "No registered variables"] );
@@ -86,14 +101,27 @@ function fooorms_form_submission( $request ) {
     if ( empty($validation_errors) && !empty( $post_data ) ) {
         do_action( 'fooorms_submit_successful', $post_data );
 
-        fooorms_create_entry( $form_key, $post_data, $attachments );
-        fooorms_send_email( $form_key, $post_data );
+        $results_entries = fooorms_create_entry( $form_key, $post_data, $attachments );
+
+        if (is_wp_error($results_entries)) {
+            $error_msg = $results_entries->get_error_message();
+
+            return new WP_REST_Response(array('message' => $error_msg), 400);
+        }
+
+        $results_email = fooorms_send_email( $form_key, $post_data );
+
+        if (is_wp_error($results_email)) {
+            $error_msg = $results_email->get_error_message();
+
+            return new WP_REST_Response(array('message' => $error_msg), 400);
+        }
+
+        fooorms_record_submission_success($form_key);
 
         $successMsg = __( 'We have received your message. Thank you!', 'fooorms' );
 
-        wp_send_json_success( [
-            'successMsg' => $successMsg
-        ] );
+        return new WP_REST_Response(array('message' => $successMsg), 200);
     } else {
         do_action( 'fooorms_submit_failed', $post_data );
         $errorMsg = __( 'Something went wrong!', 'fooorms' );
@@ -102,8 +130,31 @@ function fooorms_form_submission( $request ) {
             $errorMsg = implode(' ', $validation_errors);
         }
 
-        wp_send_json_error( [
-            'errorMsg' => $errorMsg
-        ] );
+        return new WP_REST_Response(array('message' => $errorMsg), 400);
     }
+}
+
+/**
+ * @param $request
+ */
+function fooorms_form_config( $request )
+{
+    $parameters = $request->get_params();
+
+    if (empty($parameters)) {
+        wp_send_json_error();
+    }
+
+    $form_key = sanitize_text_field($parameters['key']);
+    $rest_url = fooorms_get_form_endpoint_by_key( $form_key );
+    $form_post = FooormsInit()->fields_provider->form_from_key($form_key);
+    $eeValidations = fooorms_get_smartform_validation_schema($form_key, false);
+    $jsValidations = fooorms_get_validatejs_validation_schema($form_key);
+
+    return new WP_REST_Response([
+        'submitUrl' => $rest_url,
+        'successText' => $form_post['display']['success_message'],
+        'eeValidation' => $eeValidations,
+        'jsValidation' => $jsValidations
+    ], 200);
 }

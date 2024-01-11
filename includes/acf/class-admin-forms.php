@@ -83,10 +83,10 @@ class Admin_Forms {
     function fields_meta_box_callback() {
         global $post;
 
-        $form = fooorms_acf_get_form( $post->ID );
+        $form = FooormsInit()->fields_provider->get_form( $post->ID );
 
         // Get field groups for the current form
-        $field_groups = fooorms_acf_get_form_field_groups( $form['key'] );
+        $field_groups = FooormsInit()->fields_provider->get_form_field_groups( $form['key'] );
         ?>
 
         <p><?php _e( 'Fields can be added by setting the location of your fields group to this form. The following fields are added:', 'fooorms' ); ?></p>
@@ -162,7 +162,7 @@ class Admin_Forms {
      *
      */
     function custom_columns_content( $column, $post_id ) {
-        $form = fooorms_acf_get_form( $post_id );
+        $form = FooormsInit()->fields_provider->get_form( $post_id );
 
         if ( 'key' === $column ) {
             $form_key = get_post_meta( $post_id, 'form_key', true );
@@ -170,7 +170,7 @@ class Admin_Forms {
             echo '<p>' . __('URL', 'fooorms') . ': <code class="fooorms_endpoint_code">' . fooorms_get_form_endpoint_by_key( $form_key ) . '</code>' . '</p>';
         } else if ( 'fields' === $column ) {
             $count        = 0;
-            $field_groups = fooorms_acf_get_form_field_groups( $form['key'] );
+            $field_groups = FooormsInit()->fields_provider->get_form_field_groups( $form['key'] );
 
             // Count the number of fields in all field groups
             foreach ( $field_groups as $field_group ) {
@@ -278,9 +278,31 @@ class Admin_Forms {
                     'endpoint'          => 0,
                 ),
                 array(
-                    'key'               => 'field_form_num_of_submissions',
-                    'label'             => __( 'Number of submissions', 'fooorms' ),
-                    'name'              => 'form_num_of_submissions',
+                    'key'               => 'field_form_num_of_submission_attempts',
+                    'label'             => __( 'Number of submission attempts', 'fooorms' ),
+                    'name'              => 'form_num_of_submission_attempts',
+                    'type'              => 'number',
+                    'instructions'      => '',
+                    'required'          => 0,
+                    'conditional_logic' => 0,
+                    'wrapper'           => array(
+                        'width' => '50',
+                        'class' => '',
+                        'id'    => '',
+                    ),
+                    'default_value'     => 0,
+                    'placeholder'       => '',
+                    'prepend'           => '',
+                    'append'            => '',
+                    'min'               => '',
+                    'max'               => '',
+                    'step'              => '',
+                    'readonly'          => true,
+                ),
+                array(
+                    'key'               => 'field_form_num_of_submission_success',
+                    'label'             => __( 'Number of successful submissions', 'fooorms' ),
+                    'name'              => 'form_num_of_submission_success',
                     'type'              => 'number',
                     'instructions'      => '',
                     'required'          => 0,

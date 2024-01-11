@@ -20,7 +20,7 @@ class Admin_Emails {
 
         if ( $post && 'fooorms_form' == $post->post_type ) {
             $form_key         = get_post_meta( $post->ID, 'form_key', true );
-            $field['choices'] = _fooorms_acf_form_field_choices( $form_key, 'options' );
+            $field['choices'] = FooormsInit()->fields_provider->form_field_choices( $form_key, 'options' );
         }
 
         return $field;
@@ -35,7 +35,7 @@ class Admin_Emails {
 
         if ( $post && 'fooorms_form' == $post->post_type ) {
             $form_key  = get_post_meta( $post->ID, 'form_key', true );
-            $variables = _fooorms_acf_form_field_names( $form_key, 'options' );
+            $variables = FooormsInit()->fields_provider->form_field_names( $form_key, 'options' );
             $variables = array_values( $variables );
 
             if ( !empty( $variables ) ) {
@@ -220,7 +220,7 @@ class Admin_Emails {
                     'label'             => __( 'From', 'fooorms' ),
                     'name'              => 'fooorms_from',
                     'type'              => 'text',
-                    'instructions'      => 'Must be either an email address or on the form "Name &#x3C;Email address&#x3E;".',
+                    'instructions'      => 'Must be either an email address or in this format: "Name &#x3C;Email address&#x3E;".',
                     'required'          => 0,
                     'conditional_logic' => 0,
                     'wrapper'           => array(

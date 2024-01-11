@@ -2,9 +2,9 @@
 /*
 Plugin Name: Fooorms!
 Plugin URI: http://builderius.io/
-Description: This plugin allows creating REST endpoints for forms, creates entries from forms submissions and includes a custom email templates editor
+Description: Fooorms is a REST endpoints and email templates manager. Think of it as a back-end functionality for your front-end forms.
 Author: Vitalii Kiiko
-Version: 1.0.0
+Version: 1.2.0
 Author URI: http://builderius.io/
 Text Domain: fooorms
 Domain Path: /languages
@@ -20,6 +20,7 @@ if ( ! function_exists( 'FooormsInit' ) ) {
 	if ( ! class_exists( 'Fooorms' ) ) {
 		include_once dirname( __FILE__ ) . '/class-fooorms.php';
 	}
+
 	/**
 	 * Main instance of Fooorms.
 	 *

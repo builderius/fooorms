@@ -30,7 +30,7 @@ class Admin_Entries {
 
         if ( $post && 'fooorms_entry' == $post->post_type ) {
             // Get the current form, should be false if we are creating a new entry
-            $form = fooorms_acf_get_form( get_post_meta( $post->ID, 'entry_form', true ) );
+            $form = FooormsInit()->fields_provider->get_form( get_post_meta( $post->ID, 'entry_form', true ) );
 
             if ( $form ) {
                 // Add a link to edit the form
@@ -160,7 +160,7 @@ class Admin_Entries {
     function custom_columns_content( $column, $post_id ) {
         if ( 'form' === $column ) {
             $form_id = get_post_meta( $post_id, 'entry_form', true );
-            $form    = fooorms_acf_get_form( $form_id );
+            $form    = FooormsInit()->fields_provider->get_form( $form_id );
 
             echo sprintf( '<a href="%s">%s</a>', get_edit_post_link( $form['post_id'] ), $form['title'] );
         }
@@ -179,7 +179,7 @@ class Admin_Entries {
             return;
         }
 
-        $forms = fooorms_acf_get_forms();
+        $forms = FooormsInit()->fields_provider->get_forms();
 
         $current_form = '';
         if ( isset( $_GET['entry_form'] ) ) {
@@ -237,7 +237,7 @@ class Admin_Entries {
         global $post;
 
         if ( $post && 'fooorms_form' == $post->post_type && get_post_meta( $post->ID, 'form_create_entries', true ) ) {
-            $form                  = fooorms_acf_get_form( $post->ID );
+            $form                  = FooormsInit()->fields_provider->get_form( $post->ID );
             $field['instructions'] .= sprintf( '<a href="%s">%s</a>', admin_url() . '/edit.php?post_type=fooorms_entry&entry_form=' . $form['key'], __( 'View entries for this form', 'fooorms' ) );
         }
 

@@ -2,15 +2,18 @@
 
 namespace Fooorms;
 
-class Mail extends \WP_Mail {
+class Mail extends \WP_Mail
+{
 
     private $from         = '';
     private $to           = array();
     private $attachments  = array();
     private $variables    = array();
     private $templateHTML = '';
+    private $smtps        = array();
 
-    public static function init() {
+    public static function init()
+    {
         return new Self;
     }
 
@@ -19,7 +22,8 @@ class Mail extends \WP_Mail {
      * @param String
      * @return Object $this
      */
-    public function from( $from ) {
+    public function from($from)
+    {
         $this->from = $from;
         return $this;
     }
@@ -29,8 +33,9 @@ class Mail extends \WP_Mail {
      * @param Array|String $to
      * @return Object $this
      */
-    public function to( $to ) {
-        if ( is_array( $to ) ) {
+    public function to($to)
+    {
+        if (is_array($to)) {
             $this->to = $to;
         } else {
             $this->to = array($to);
@@ -44,29 +49,32 @@ class Mail extends \WP_Mail {
      * @param Array $variables
      * @return Object $this
      */
-    public function subject( $subject, $variables = NULL ) {
+    public function subject($subject, $variables = null)
+    {
         $this->subject = $subject;
 
-        if ( is_array( $variables ) ) {
+        if (is_array($variables)) {
             $this->variables = $variables;
         }
 
         return $this;
     }
 
-    public function buildSubject() {
-        return $this->parseAsMustache( $this->subject, $this->variables );
+    public function buildSubject()
+    {
+        return $this->parseAsMustache($this->subject, $this->variables);
     }
 
     /**
      * Builds Email Headers
      * @return String email headers
      */
-    public function buildHeaders() {
+    public function buildHeaders()
+    {
         $headers = '';
 
-        if ( !empty( $this->from ) ) {
-            $headers .= sprintf( "from: %s \r\n", $this->from );
+        if (!empty($this->from)) {
+            $headers .= sprintf("from: %s \r\n", $this->from);
         }
 
         return $headers;
@@ -78,10 +86,11 @@ class Mail extends \WP_Mail {
      * @param Array $variables
      * @return Object $this
      */
-    public function templateHTML( $html, $variables = NULL ) {
+    public function templateHTML($html, $variables = null)
+    {
         $this->templateHTML = $html;
 
-        if ( is_array( $variables ) ) {
+        if (is_array($variables)) {
             $this->variables = $variables;
         }
 
@@ -93,21 +102,22 @@ class Mail extends \WP_Mail {
      * Filepaths must be absolute.
      * @param String|Array $path
      * @return Object $this
-     * @throws Exception
+     * @throws \Exception
      */
-    public function attach( $path ) {
-        if ( is_array( $path ) ) {
+    public function attach($path)
+    {
+        if (is_array($path)) {
             $this->attachments = array();
-            foreach ( $path as $path_ ) {
-                if ( !file_exists( $path_ ) ) {
-                    throw new Exception( "Attachment not found at $path" );
+            foreach ($path as $path_) {
+                if (!file_exists($path_)) {
+                    throw new \Exception("Attachment not found at $path");
                 } else {
                     $this->attachments[] = $path_;
                 }
             }
         } else {
-            if ( !file_exists( $path ) ) {
-                throw new Exception( "Attachment not found at $path" );
+            if (!file_exists($path)) {
+                throw new \Exception("Attachment not found at $path");
             }
             $this->attachments = array($path);
         }
@@ -119,21 +129,30 @@ class Mail extends \WP_Mail {
      * Renders the template
      * @return String
      */
-    public function render() {
+    public function render()
+    {
         $variables = $this->variables;
 
-        if ( !is_array( $variables ) || empty( $variables ) ) {
+        if (!is_array($variables) || empty($variables)) {
             return $this->templateHTML;
         }
 
-        return $this->parseAsMustache( $this->templateHTML, $variables );
+        return $this->parseAsMustache($this->templateHTML, $variables);
     }
 
     /**
      * @return string
      */
-    function send_as_html() {
+    function send_as_html()
+    {
         return 'text/html';
+    }
+
+    function setSMTP($data)
+    {
+        $this->smtps = $data;
+
+        return $this;
     }
 
     /**
@@ -141,17 +160,39 @@ class Mail extends \WP_Mail {
      * WordPress's wp_mail() function
      * @return Bool
      */
-    public function send() {
-        if ( count( $this->to ) === 0 ) {
-            throw new Exception( 'You must set at least 1 recipient' );
+    public function send()
+    {
+        if (count($this->to) === 0) {
+            throw new \Exception('You must set at least 1 recipient');
         }
 
-        if ( empty( $this->templateHTML ) ) {
-            throw new Exception( 'You must set a template' );
+        if (empty($this->templateHTML)) {
+            throw new \Exception('You must set a template');
         }
 
-        add_filter( 'wp_mail_content_type', [$this, 'send_as_html'] );
+        add_filter('wp_mail_content_type', [$this, 'send_as_html']);
 
-        return wp_mail( $this->to, $this->buildSubject(), $this->render(), $this->buildHeaders(), $this->attachments );
+        if (!empty($this->smtps)) {
+            do_action(
+                'fooorms_smtp_mail',
+                $this->smtps,
+                $this->from,
+                $this->to,
+                $this->buildSubject(),
+                $this->render(),
+                $this->buildHeaders(),
+                $this->attachments
+            );
+
+            $smtp_logs = FooormsInit()->get_smtp_log();
+
+            if (empty($smtp_logs)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        return wp_mail($this->to, $this->buildSubject(), $this->render(), $this->buildHeaders(), $this->attachments);
     }
 }

@@ -94,6 +94,28 @@ function fooorms_get_cur_lang() {
 }
 
 /**
+ * @param $form_post_key
+ * @return void
+ */
+function fooorms_record_submission_attempt($form_post_key) {
+    $form_obj = FooormsInit()->fields_provider->form_from_key( $form_post_key );
+    $submissions = get_post_meta( $form_obj['post_id'], 'form_num_of_submission_attempts', true );
+    $submissions = $submissions ? $submissions + 1 : 1;
+    update_post_meta( $form_obj['post_id'], 'form_num_of_submission_attempts', $submissions );
+}
+
+/**
+ * @param $form_post_key
+ * @return void
+ */
+function fooorms_record_submission_success($form_post_key) {
+    $form_obj = FooormsInit()->fields_provider->form_from_key( $form_post_key );
+    $submissions = get_post_meta( $form_obj['post_id'], 'form_num_of_submission_success', true );
+    $submissions = $submissions ? $submissions + 1 : 1;
+    update_post_meta( $form_obj['post_id'], 'form_num_of_submission_success', $submissions );
+}
+
+/**
  * @param $form_key
  * @return string
  */
@@ -103,18 +125,26 @@ function fooorms_get_form_endpoint_by_key( $form_key ) {
 
 /**
  * @param $form_key
+ * @return string
+ */
+function fooorms_get_form_success_message( $form_key ) {
+    return get_rest_url( null, 'fooorms/v1/submit/' . $form_key );;
+}
+
+/**
+ * @param $form_key
  * @param $post_data
  * @param $attachments
- * @return int|void|WP_Error
+ * @return int|bool|WP_Error
  */
 function fooorms_create_entry( $form_key, $post_data, $attachments ) {
-    $form_obj = fooorms_acf_form_from_key( $form_key );
+    $form_obj = FooormsInit()->fields_provider->form_from_key( $form_key );
 
     if ( empty( $form_obj['create_entries'] ) ) {
-        return;
+        return true;
     }
 
-    $entry_content_starter = _fooorms_acf_entry_content_starter( $form_key, 'options' );
+    $entry_content_starter = FooormsInit()->fields_provider->entry_content_starter( $form_key, 'options' );
 
     foreach ( $entry_content_starter as $key => $value ) {
         $entry_content_starter[$key]['value'] = isset( $post_data[$key] ) ? $post_data[$key] : '';
@@ -130,7 +160,7 @@ function fooorms_create_entry( $form_key, $post_data, $attachments ) {
     $entry_id = wp_insert_post( $post_data );
 
     if ( !$entry_id ) {
-        return;
+        return new WP_Error( '1', 'Entry post has not been created' );
     }
 
     // Update post title
@@ -161,17 +191,18 @@ function fooorms_create_entry( $form_key, $post_data, $attachments ) {
 /**
  * @param $form_key
  * @param $post_data
- * @return void
+ * @return bool|WP_Error
  */
 function fooorms_send_email( $form_key, $post_data ) {
-    $form_obj             = fooorms_acf_form_from_key( $form_key );
-    $registered_variables = _fooorms_acf_form_field_names( $form_key, 'options' );
+    $form_obj             = FooormsInit()->fields_provider->form_from_key( $form_key );
+    $registered_variables = FooormsInit()->fields_provider->form_field_names( $form_key, 'options' );
 
     if ( empty( $form_obj['emails'] ) ) {
-        return;
+        return true;
     }
 
     $variables = fooorms_merge_with_permanent_vars( $post_data );
+    $results = [];
 
     foreach ( $form_obj['emails'] as $email_data ) {
         $send_to = '';
@@ -188,12 +219,30 @@ function fooorms_send_email( $form_key, $post_data ) {
             $send_to = '';
         }
 
-        $email = Fooorms\Mail::init()
-            ->from( $email_data['fooorms_from'] )
-            ->to( $send_to )
-            ->subject( $email_data['fooorms_subject'], $variables )
-            ->templateHTML( $email_data['fooorms_content'], $variables )
-            ->send();
+        try {
+            $results[] = Fooorms\Mail::init()
+                ->setSMTP($form_obj['smtps'])
+                ->from($email_data['fooorms_from'])
+                ->to($send_to)
+                ->subject($email_data['fooorms_subject'], $variables)
+                ->templateHTML($email_data['fooorms_content'], $variables)
+                ->send();
+        } catch (\Exception $e) {
+            FooormsInit()->set_smtp_log($e->getMessage());
+            $results[] = false;
+        }
+    }
+
+    if (in_array(false, $results)) {
+        $smtp_logs = FooormsInit()->get_smtp_log();
+        $error_msg = !empty($smtp_logs) ? implode('; ', $smtp_logs) : 'Something went wrong during sending emails';
+
+        // clear smtp logs
+        FooormsInit()->clear_smtp_log();
+
+        return new WP_Error( '2', $error_msg );
+    } else {
+        return true;
     }
 }
 
@@ -330,7 +379,7 @@ function fooorms_get_media_types() {
  * @return array
  */
 function fooorms_get_smartform_validation_schema($form_key, $translate = true) {
-    $form_fields = fooorms_acf_get_form_fields( $form_key, 'options' );
+    $form_fields = FooormsInit()->fields_provider->get_form_fields( $form_key, 'options' );
     $types = FooormsInit()->get_form_field_types();
     $keys = array_keys($types);
     $form_types = wp_list_pluck($types, 'type');
@@ -344,7 +393,9 @@ function fooorms_get_smartform_validation_schema($form_key, $translate = true) {
         $validators = [];
 
         if (!empty($form_cfg['required'])) {
-            $msg = __("{$field_label} is required!", 'fooorms');
+            $msg = !empty($form_cfg['field_error_msg'])
+                ? __($form_cfg['field_error_msg'], 'fooorms')
+                : __("{$field_label} is required!", 'fooorms');
 
             if ($translate && class_exists('Builderius\Bundle\ExpressionLanguageBundle\ExpressionLanguage')) {
                 $msg = "[[translate('$msg')]]";
@@ -376,6 +427,49 @@ function fooorms_get_smartform_validation_schema($form_key, $translate = true) {
     return $validation_schema;
 }
 
+function fooorms_get_validatejs_validation_schema($form_key) {
+    $form_fields = FooormsInit()->fields_provider->get_form_fields( $form_key, 'options' );
+    $types = FooormsInit()->get_form_field_types();
+    $keys = array_keys($types);
+    $form_types = wp_list_pluck($types, 'type');
+    $final_types = array_combine($keys, $form_types);
+    $validation_schema = [];
+
+    foreach ($form_fields as $form_cfg) {
+        $field_label = $form_cfg['label'];
+        $field_name = $form_cfg['name'];
+        $field_type = $form_cfg['field_type'];
+
+        $validation_schema[$field_name] = [
+            'type' => $final_types[$field_type],
+        ];
+
+        if (!empty($form_cfg['required'])) {
+            if (!empty($form_cfg['field_error_msg'])) {
+                $validation_schema[$field_name]['presence']['message'] = __($form_cfg['field_error_msg'], 'fooorms');
+            } else {
+                $validation_schema[$field_name]['presence']['message'] = __("{$field_label} is required!", 'fooorms');
+            }
+        }
+
+        if(!empty($form_cfg['field_validation_rules'])) {
+            $items = array_values($form_cfg['field_validation_rules']);
+            foreach ($items as $value) {
+                $rules = array_values($value);
+                $rules_value = $rules[0];
+                $msg = $rules[1];
+
+                $decoded = json_decode($rules_value, true);
+                if (!empty($decoded) && is_array($decoded)) {
+                    $validation_schema[$field_name] = array_merge($validation_schema[$field_name], $decoded);
+                }
+            }
+        }
+    }
+
+    return $validation_schema;
+}
+
 /**
  * @param $form_key
  * @return string
@@ -389,7 +483,7 @@ function fooorms_get_smartform_action($form_key) {
  * @return string
  */
 function fooorms_get_smartform_success_msg($form_key, $translate = true) {
-    $form = fooorms_acf_form_from_key( $form_key );
+    $form = FooormsInit()->fields_provider->form_from_key( $form_key );
     $key = 'form_success_message';
     $post_id = $form['post_id'];
     $msg = function_exists('get_field')
