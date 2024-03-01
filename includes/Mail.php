@@ -5,12 +5,12 @@ namespace Fooorms;
 class Mail extends \WP_Mail
 {
 
-    private $from         = '';
-    private $to           = array();
-    private $attachments  = array();
-    private $variables    = array();
+    private $from = '';
+    private $to = array();
+    private $attachments = array();
+    private $variables = array();
     private $templateHTML = '';
-    private $smtps        = array();
+    private $smtps = array();
 
     public static function init()
     {
@@ -22,10 +22,20 @@ class Mail extends \WP_Mail
      * @param String
      * @return Object $this
      */
-    public function from($from)
+    public function from($from, $variables = null)
     {
         $this->from = $from;
+
+        if (is_array($variables)) {
+            $this->variables = $variables;
+        }
+
         return $this;
+    }
+
+    public function buildFrom()
+    {
+        return $this->parseAsMustache($this->from, $this->variables);
     }
 
     /**
@@ -33,14 +43,29 @@ class Mail extends \WP_Mail
      * @param Array|String $to
      * @return Object $this
      */
-    public function to($to)
+    public function to($to, $variables = null)
     {
         if (is_array($to)) {
             $this->to = $to;
         } else {
             $this->to = array($to);
         }
+
+        if (is_array($variables)) {
+            $this->variables = $variables;
+        }
+
         return $this;
+    }
+
+    public function buildTo()
+    {
+        $newTo = [];
+        foreach ($this->to as $email_to) {
+            $newTo[] = $this->parseAsMustache($email_to, $this->variables);
+        }
+
+        return $newTo;
     }
 
     /**
@@ -73,8 +98,8 @@ class Mail extends \WP_Mail
     {
         $headers = '';
 
-        if (!empty($this->from)) {
-            $headers .= sprintf("from: %s \r\n", $this->from);
+        if (!empty($this->buildFrom())) {
+            $headers .= sprintf("from: %s \r\n", $this->buildFrom());
         }
 
         return $headers;
@@ -162,6 +187,7 @@ class Mail extends \WP_Mail
      */
     public function send()
     {
+
         if (count($this->to) === 0) {
             throw new \Exception('You must set at least 1 recipient');
         }
@@ -176,8 +202,8 @@ class Mail extends \WP_Mail
             do_action(
                 'fooorms_smtp_mail',
                 $this->smtps,
-                $this->from,
-                $this->to,
+                $this->buildFrom(),
+                $this->buildTo(),
                 $this->buildSubject(),
                 $this->render(),
                 $this->buildHeaders(),
@@ -193,6 +219,6 @@ class Mail extends \WP_Mail
             }
         }
 
-        return wp_mail($this->to, $this->buildSubject(), $this->render(), $this->buildHeaders(), $this->attachments);
+        return wp_mail($this->buildTo(), $this->buildSubject(), $this->render(), $this->buildHeaders(), $this->attachments);
     }
 }

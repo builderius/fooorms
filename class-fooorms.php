@@ -17,7 +17,7 @@ final class Fooorms
     /**
      * @var string
      */
-    public $version = '1.2.0';
+    public $version = '1.3.0';
 
     /**
      * @var ACF\Extension

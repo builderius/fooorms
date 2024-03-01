@@ -58,6 +58,7 @@ class Admin_Smtp
      * @param $message
      * @param $headers
      * @param $attachments
+     *
      * @return bool
      * @global \PHPMailer\PHPMailer\PHPMailer $phpmailer
      *
@@ -141,6 +142,7 @@ class Admin_Smtp
             if (!empty($smtp['smtp_username'])) {
                 $phpmailer->SMTPAuth   = true;
                 $phpmailer->SMTPSecure = "starttls";
+                $phpmailer->Port       = 587;
 
                 $phpmailer->Username = $smtp['smtp_username'];
                 $phpmailer->Password = $smtp['smtp_password'];

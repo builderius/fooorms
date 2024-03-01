@@ -33,9 +33,15 @@ function fooorms_register_route() {
  */
 function fooorms_form_submission( $request ) {
     $parameters = $request->get_params();
+    $errorMsg = __( 'Something went wrong!', 'fooorms' );
 
     if ( empty( $parameters ) ) {
-        wp_send_json_error();
+        return new WP_REST_Response([
+            'success' => false,
+            'data' => [
+                'errorMsg' => $errorMsg
+            ]
+        ], 400);
     }
 
     $form_key = sanitize_text_field( $parameters['key'] );
@@ -43,7 +49,12 @@ function fooorms_form_submission( $request ) {
     $registered_variables = FooormsInit()->fields_provider->form_field_names( $form_key, 'options' );
 
     if ( empty( $registered_variables ) ) {
-        wp_send_json_error( ["errorMsg" => "No registered variables"] );
+        return new WP_REST_Response([
+            'success' => false,
+            'data' => [
+                'errorMsg' => __( 'No registered variables.', 'fooorms' )
+            ]
+        ], 400);
     }
 
     unset( $parameters['key'] );
@@ -106,7 +117,12 @@ function fooorms_form_submission( $request ) {
         if (is_wp_error($results_entries)) {
             $error_msg = $results_entries->get_error_message();
 
-            return new WP_REST_Response(array('message' => $error_msg), 400);
+            return new WP_REST_Response([
+                'success' => false,
+                'data' => [
+                    'errorMsg' => $error_msg
+                ]
+            ], 400);
         }
 
         $results_email = fooorms_send_email( $form_key, $post_data );
@@ -114,14 +130,24 @@ function fooorms_form_submission( $request ) {
         if (is_wp_error($results_email)) {
             $error_msg = $results_email->get_error_message();
 
-            return new WP_REST_Response(array('message' => $error_msg), 400);
+            return new WP_REST_Response([
+                'success' => false,
+                'data' => [
+                    'errorMsg' => $error_msg
+                ]
+            ], 400);
         }
 
         fooorms_record_submission_success($form_key);
 
         $successMsg = __( 'We have received your message. Thank you!', 'fooorms' );
 
-        return new WP_REST_Response(array('message' => $successMsg), 200);
+        return new WP_REST_Response([
+            'success' => true,
+            'data' => [
+                'successMsg' => $successMsg
+            ]
+        ], 200);
     } else {
         do_action( 'fooorms_submit_failed', $post_data );
         $errorMsg = __( 'Something went wrong!', 'fooorms' );
@@ -130,7 +156,12 @@ function fooorms_form_submission( $request ) {
             $errorMsg = implode(' ', $validation_errors);
         }
 
-        return new WP_REST_Response(array('message' => $errorMsg), 400);
+        return new WP_REST_Response([
+            'success' => false,
+            'data' => [
+                'errorMsg' => $errorMsg
+            ]
+        ], 400);
     }
 }
 

@@ -222,13 +222,14 @@ function fooorms_send_email( $form_key, $post_data ) {
         try {
             $results[] = Fooorms\Mail::init()
                 ->setSMTP($form_obj['smtps'])
-                ->from($email_data['fooorms_from'])
-                ->to($send_to)
+                ->from($email_data['fooorms_from'], $variables)
+                ->to($send_to, $variables)
                 ->subject($email_data['fooorms_subject'], $variables)
                 ->templateHTML($email_data['fooorms_content'], $variables)
                 ->send();
         } catch (\Exception $e) {
             FooormsInit()->set_smtp_log($e->getMessage());
+
             $results[] = false;
         }
     }
