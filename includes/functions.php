@@ -175,25 +175,39 @@ function fooorms_create_entry( $form_key, $post_data, $attachments ) {
     update_post_meta( $entry_id, 'entry_submission_date', date( 'Y-m-d H:i:s' ) );
     update_post_meta( $entry_id, 'entry_content', $entry_content_starter );
 
+    $attachments_error = null;
     if ( !empty( $attachments ) ) {
         foreach ( $attachments as $attachment_id ) {
-            $updated_attachemnt_data = [
-                'ID'          => $attachment_id,
-                'post_parent' => $entry_id,
-            ];
-            wp_update_post( $updated_attachemnt_data );
+            if (!is_wp_error($attachment_id)) {
+                $attachment_path = get_attached_file($attachment_id);
+
+                if (!is_wp_error($attachment_path)) {
+                    $updated_attachemnt_data = [
+                        'ID' => $attachment_id,
+                        'post_parent' => $entry_id,
+                    ];
+                    wp_update_post($updated_attachemnt_data);
+                }
+            } else {
+                $attachments_error = $attachment_id;
+            }
         }
     }
 
-    return $entry_id;
+    if ($attachments_error) {
+        wp_delete_post( $entry_id, true );
+    }
+
+    return $attachments_error ?? $entry_id;
 }
 
 /**
  * @param $form_key
  * @param $post_data
+ * @param $attachments
  * @return bool|WP_Error
  */
-function fooorms_send_email( $form_key, $post_data ) {
+function fooorms_send_email( $form_key, $post_data, $attachments ) {
     $form_obj             = FooormsInit()->fields_provider->form_from_key( $form_key );
     $registered_variables = FooormsInit()->fields_provider->form_field_names( $form_key, 'options' );
 
@@ -220,13 +234,26 @@ function fooorms_send_email( $form_key, $post_data ) {
         }
 
         try {
-            $results[] = Fooorms\Mail::init()
+            $mail = Fooorms\Mail::init()
                 ->setSMTP($form_obj['smtps'])
                 ->from($email_data['fooorms_from'], $variables)
                 ->to($send_to, $variables)
                 ->subject($email_data['fooorms_subject'], $variables)
-                ->templateHTML($email_data['fooorms_content'], $variables)
-                ->send();
+                ->templateHTML($email_data['fooorms_content'], $variables);
+
+            if ( !empty( $attachments ) ) {
+                foreach ( $attachments as $attachment_id ) {
+                    $attachment_path = get_attached_file($attachment_id);
+
+                    if (!is_wp_error($attachment_path)) {
+                        $mail->attach($attachment_path);
+                    }
+                }
+            }
+
+            $mail->send();
+
+            $results[] = $mail;
         } catch (\Exception $e) {
             FooormsInit()->set_smtp_log($e->getMessage());
 
@@ -371,7 +398,7 @@ function fooorms_insert_attachment( $file ) {
 /**
  * @return array
  */
-function fooorms_get_media_types() {
+function fooorms_get_allowed_file_types() {
     return array_values( get_allowed_mime_types() );
 }
 

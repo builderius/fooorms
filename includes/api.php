@@ -95,7 +95,7 @@ function fooorms_form_submission( $request ) {
     $params_file = $request->get_file_params();
     $attachments = [];
     if ( !empty( $params_file ) ) {
-        $media_types = fooorms_get_media_types();
+        $media_types = fooorms_get_allowed_file_types();
         foreach ( $params_file as $var_name => $param_file ) {
             if ( in_array( $var_name, $variables_list ) && in_array( $param_file['type'], $media_types ) ) {
                 if ( !is_array( $post_data[$var_name] ) ) {
@@ -105,6 +105,8 @@ function fooorms_form_submission( $request ) {
                 $attachemnt_id          = fooorms_insert_attachment( $file );
                 $post_data[$var_name][] = $attachemnt_id;
                 $attachments[]          = $attachemnt_id;
+            } else {
+                $attachments[] = new WP_Error(1, "Uploading file of this type ({$param_file['type']}) is not allowed");
             }
         }
     }
@@ -125,7 +127,7 @@ function fooorms_form_submission( $request ) {
             ], 400);
         }
 
-        $results_email = fooorms_send_email( $form_key, $post_data );
+        $results_email = fooorms_send_email( $form_key, $post_data, $attachments );
 
         if (is_wp_error($results_email)) {
             $error_msg = $results_email->get_error_message();

@@ -17,7 +17,7 @@ final class Fooorms
     /**
      * @var string
      */
-    public $version = '1.3.0';
+    public $version = '1.4.0';
 
     /**
      * @var ACF\Extension
@@ -321,7 +321,11 @@ final class Fooorms
             'checkboxes'    => [
                 'type'  => 'array',
                 'label' => __('Checkboxes (type: "array")', 'fooorms')
-            ]
+            ],
+            'file'    => [
+                'type'  => 'string',
+                'label' => __('File input (type: "string")', 'fooorms')
+            ],
         ];
     }
 

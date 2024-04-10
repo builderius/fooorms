@@ -85,10 +85,15 @@ class Admin_Entries {
             if ( !empty( $entry_content ) ) {
                 foreach ( $entry_content as $field_name => $field_data ) {
                     if ( is_array( $field_data['value'] ) ) {
+                        $values_data = [];
                         foreach ( $field_data['value'] as $attach_id ) {
-
+                            if (is_wp_error($attach_id)) {
+                                $values_data[] = implode( ', ', $attach_id->get_error_messages() );
+                            } else {
+                                $values_data[] = $attach_id;
+                            }
                         }
-                        $value = join( ', ', $field_data['value'] );
+                        $value = implode( ', ', $values_data );
                     } else {
                         $value = $field_data['value'];
                     }
