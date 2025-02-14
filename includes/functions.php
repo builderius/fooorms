@@ -242,13 +242,17 @@ function fooorms_send_email( $form_key, $post_data, $attachments ) {
                 ->templateHTML($email_data['fooorms_content'], $variables);
 
             if ( !empty( $attachments ) ) {
+                $attachment_pathes = [];
+
                 foreach ( $attachments as $attachment_id ) {
                     $attachment_path = get_attached_file($attachment_id);
 
                     if (!is_wp_error($attachment_path)) {
-                        $mail->attach($attachment_path);
+                        $attachment_pathes[] = $attachment_path;
                     }
                 }
+
+                $mail->attach($attachment_pathes);
             }
 
             $mail->send();

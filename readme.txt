@@ -3,7 +3,7 @@ Contributors: builderius, mrpsiho
 Tags: form, form builder, rest api, email template
 Requires at least: 6.0
 Tested up to: 6.5
-Stable tag: 1.4.0
+Stable tag: 1.4.1
 License: GPLv2.1
 License URI: http://www.gnu.org/licenses/gpl-2.1.html
 
@@ -43,6 +43,9 @@ Yes, Fooorms admin UI is built on ACF fields. You have to have ACF PRO version i
 
 
 == Changelog ==
+
+= 1.4.1 =
+* Fixed: functionality of uploading multiple files
 
 = 1.4.0 =
 * Fixed: errors when uploading files

@@ -1,41 +1,43 @@
 <?php
 
-function fooorms_register_route() {
-    register_rest_route( 'fooorms/v1', '/submit/(?P<key>[a-zA-Z0-9-_]+)', array(
-        'methods'             => 'POST',
-        'callback'            => 'fooorms_form_submission',
+function fooorms_register_route()
+{
+    register_rest_route('fooorms/v1', '/submit/(?P<key>[a-zA-Z0-9-_]+)', array(
+        'methods' => 'POST',
+        'callback' => 'fooorms_form_submission',
         'permission_callback' => '__return_true',
-        'args'                => array(
+        'args' => array(
             'key' => array(
                 'validate_callback' => function ($param, $request, $key) {
-                    return !empty( $param ) && FooormsInit()->fields_provider->is_valid_form_key( $param );
+                    return !empty($param) && FooormsInit()->fields_provider->is_valid_form_key($param);
                 }
             )
         ),
-    ) );
+    ));
 
-    register_rest_route( 'fooorms/v1', '/config/(?P<key>[a-zA-Z0-9-_]+)', array(
-        'methods'             => 'GET',
-        'callback'            => 'fooorms_form_config',
+    register_rest_route('fooorms/v1', '/config/(?P<key>[a-zA-Z0-9-_]+)', array(
+        'methods' => 'GET',
+        'callback' => 'fooorms_form_config',
         'permission_callback' => '__return_true',
-        'args'                => array(
+        'args' => array(
             'key' => array(
                 'validate_callback' => function ($param, $request, $key) {
-                    return !empty( $param ) && FooormsInit()->fields_provider->is_valid_form_key( $param );
+                    return !empty($param) && FooormsInit()->fields_provider->is_valid_form_key($param);
                 }
             )
         ),
-    ) );
+    ));
 }
 
 /**
  * @param $request
  */
-function fooorms_form_submission( $request ) {
+function fooorms_form_submission($request)
+{
     $parameters = $request->get_params();
-    $errorMsg = __( 'Something went wrong!', 'fooorms' );
+    $errorMsg = __('Something went wrong!', 'fooorms');
 
-    if ( empty( $parameters ) ) {
+    if (empty($parameters)) {
         return new WP_REST_Response([
             'success' => false,
             'data' => [
@@ -44,27 +46,27 @@ function fooorms_form_submission( $request ) {
         ], 400);
     }
 
-    $form_key = sanitize_text_field( $parameters['key'] );
+    $form_key = sanitize_text_field($parameters['key']);
     fooorms_record_submission_attempt($form_key);
-    $registered_variables = FooormsInit()->fields_provider->form_field_names( $form_key, 'options' );
+    $registered_variables = FooormsInit()->fields_provider->form_field_names($form_key, 'options');
 
-    if ( empty( $registered_variables ) ) {
+    if (empty($registered_variables)) {
         return new WP_REST_Response([
             'success' => false,
             'data' => [
-                'errorMsg' => __( 'No registered variables.', 'fooorms' )
+                'errorMsg' => __('No registered variables.', 'fooorms')
             ]
         ], 400);
     }
 
-    unset( $parameters['key'] );
-    $variables_list = array_values( $registered_variables );
-    $parameters     = fooorms_sanitize_data( $parameters );
-    $post_data      = [];
+    unset($parameters['key']);
+    $variables_list = array_values($registered_variables);
+    $parameters = fooorms_sanitize_data($parameters);
+    $post_data = [];
     $validation_errors = [];
 
-    foreach ( $variables_list as $variable ) {
-        if ( isset( $parameters[$variable] ) ) {
+    foreach ($variables_list as $variable) {
+        if (isset($parameters[$variable])) {
             $post_data[$variable] = $parameters[$variable];
         } else {
             $post_data[$variable] = '';
@@ -82,9 +84,9 @@ function fooorms_form_submission( $request ) {
         foreach ($validations as $name => $data) {
             foreach ($data['validators'] as $validator) {
                 foreach ($validator as $rule => $msg) {
-                    $res = $ee->evaluate( $rule, $post_data );
+                    $res = $ee->evaluate($rule, $post_data);
 
-                    if ( !$res ) {
+                    if (!$res) {
                         $validation_errors[] = $msg;
                     }
                 }
@@ -94,27 +96,45 @@ function fooorms_form_submission( $request ) {
 
     $params_file = $request->get_file_params();
     $attachments = [];
-    if ( !empty( $params_file ) ) {
+    if (!empty($params_file)) {
         $media_types = fooorms_get_allowed_file_types();
-        foreach ( $params_file as $var_name => $param_file ) {
-            if ( in_array( $var_name, $variables_list ) && in_array( $param_file['type'], $media_types ) ) {
-                if ( !is_array( $post_data[$var_name] ) ) {
-                    $post_data[$var_name] = [];
+        foreach ($params_file as $var_name => $param_file) {
+            $files_data = [];
+
+            if (is_array($param_file['name'])) {
+                foreach ($param_file['name'] as $key => $filename) {
+                    $files_data[] = [
+                        "name" => $filename,
+                        "type" => $param_file['type'][$key],
+                        "tmp_name" => $param_file['tmp_name'][$key],
+                        "error" => $param_file['error'][$key],
+                        "size" => $param_file['size'][$key]
+                    ];
                 }
-                $file                   = fooorms_handle_upload( $param_file );
-                $attachemnt_id          = fooorms_insert_attachment( $file );
-                $post_data[$var_name][] = $attachemnt_id;
-                $attachments[]          = $attachemnt_id;
             } else {
-                $attachments[] = new WP_Error(1, "Uploading file of this type ({$param_file['type']}) is not allowed");
+                $files_data[] = $param_file;
+            }
+
+            foreach ($files_data as $file_data) {
+                if (in_array($var_name, $variables_list) && in_array($file_data['type'], $media_types)) {
+                    if (!is_array($post_data[$var_name])) {
+                        $post_data[$var_name] = [];
+                    }
+                    $file = fooorms_handle_upload($file_data);
+                    $attachemnt_id = fooorms_insert_attachment($file);
+                    $post_data[$var_name][] = $attachemnt_id;
+                    $attachments[] = $attachemnt_id;
+                } else {
+                    $attachments[] = new WP_Error(1, "Uploading file of this type ({$file_data['type']}) is not allowed");
+                }
             }
         }
     }
 
-    if ( empty($validation_errors) && !empty( $post_data ) ) {
-        do_action( 'fooorms_submit_successful', $post_data );
+    if (empty($validation_errors) && !empty($post_data)) {
+        do_action('fooorms_submit_successful', $post_data);
 
-        $results_entries = fooorms_create_entry( $form_key, $post_data, $attachments );
+        $results_entries = fooorms_create_entry($form_key, $post_data, $attachments);
 
         if (is_wp_error($results_entries)) {
             $error_msg = $results_entries->get_error_message();
@@ -127,7 +147,7 @@ function fooorms_form_submission( $request ) {
             ], 400);
         }
 
-        $results_email = fooorms_send_email( $form_key, $post_data, $attachments );
+        $results_email = fooorms_send_email($form_key, $post_data, $attachments);
 
         if (is_wp_error($results_email)) {
             $error_msg = $results_email->get_error_message();
@@ -142,7 +162,7 @@ function fooorms_form_submission( $request ) {
 
         fooorms_record_submission_success($form_key);
 
-        $successMsg = __( 'We have received your message. Thank you!', 'fooorms' );
+        $successMsg = __('We have received your message. Thank you!', 'fooorms');
 
         return new WP_REST_Response([
             'success' => true,
@@ -151,8 +171,8 @@ function fooorms_form_submission( $request ) {
             ]
         ], 200);
     } else {
-        do_action( 'fooorms_submit_failed', $post_data );
-        $errorMsg = __( 'Something went wrong!', 'fooorms' );
+        do_action('fooorms_submit_failed', $post_data);
+        $errorMsg = __('Something went wrong!', 'fooorms');
 
         if (!empty($validation_errors)) {
             $errorMsg = implode(' ', $validation_errors);
@@ -170,7 +190,7 @@ function fooorms_form_submission( $request ) {
 /**
  * @param $request
  */
-function fooorms_form_config( $request )
+function fooorms_form_config($request)
 {
     $parameters = $request->get_params();
 
@@ -179,7 +199,7 @@ function fooorms_form_config( $request )
     }
 
     $form_key = sanitize_text_field($parameters['key']);
-    $rest_url = fooorms_get_form_endpoint_by_key( $form_key );
+    $rest_url = fooorms_get_form_endpoint_by_key($form_key);
     $form_post = FooormsInit()->fields_provider->form_from_key($form_key);
     $eeValidations = fooorms_get_smartform_validation_schema($form_key, false);
     $jsValidations = fooorms_get_validatejs_validation_schema($form_key);
